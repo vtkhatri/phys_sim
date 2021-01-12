@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
 	"time"
 )
 
@@ -11,8 +14,8 @@ type Space struct {
 }
 
 func main() {
-	width := 30
-	height := 30
+	width := 35
+	height := 35
 	screen := make([][]int, width, height)
 	for i := range screen {
 		for y := 0; y < height; y++ {
@@ -27,11 +30,22 @@ func main() {
 }
 
 func display(space Space) {
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	case "linux":
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	default:
+	}
 	fmt.Printf("\n")
 	for x := 0; x < space.w; x++ {
 		fmt.Printf("-")
 	}
-	fmt.Printf("\n")
+	fmt.Printf("|\n")
 	for _, xline := range space.s {
 		for x, c := range xline {
 			var pixel rune
@@ -52,17 +66,17 @@ func display(space Space) {
 	for x := 0; x < space.w; x++ {
 		fmt.Printf("-")
 	}
-	fmt.Printf("\n")
+	fmt.Printf("|\n")
 }
 
 func sim(space Space) {
 	width := space.w
 	height := space.h
-	for i := 0; i < 100; i++ {
+	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
 				if x+1 != width && y+1 != height {
-					/* Sim for Sand */
+					/* Sim rules for Sand */
 					if 1 == space.s[x][y] {
 						if space.s[x][y+1] != 1 {
 							space.s[x][y] = space.s[x][y+1]
@@ -75,7 +89,7 @@ func sim(space Space) {
 							space.s[x+1][y+1] = 1
 						}
 					}
-					/* Sim for Sand */
+					/* Sim rules for Water */
 					if 2 == space.s[x][y] {
 						if space.s[x][y+1] == 0 {
 							space.s[x][y] = space.s[x][y+1]
@@ -106,6 +120,6 @@ func sim(space Space) {
 		}
 		display(space)
 
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(16 * time.Millisecond) /* for approx 60 "frames" on terminal */
 	}
 }
