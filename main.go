@@ -28,7 +28,7 @@ func main() {
 
 func display(space Space) {
 	fmt.Printf("\n")
-	for x := 0; x <= space.w; x++ {
+	for x := 0; x < space.w; x++ {
 		fmt.Printf("-")
 	}
 	fmt.Printf("\n")
@@ -49,7 +49,7 @@ func display(space Space) {
 			}
 		}
 	}
-	for x := 0; x < space.w+2; x++ {
+	for x := 0; x < space.w; x++ {
 		fmt.Printf("-")
 	}
 	fmt.Printf("\n")
@@ -65,32 +65,32 @@ func sim(space Space) {
 					/* Sim for Sand */
 					if 1 == space.s[x][y] {
 						if space.s[x][y+1] != 1 {
-							space.s[x][y] = 0
+							space.s[x][y] = space.s[x][y+1]
 							space.s[x][y+1] = 1
 						} else if space.s[x-1][y+1] != 1 {
-							space.s[x][y] = 0
+							space.s[x][y] = space.s[x-1][y+1]
 							space.s[x-1][y+1] = 1
 						} else if space.s[x+1][y+1] != 1 {
-							space.s[x][y] = 0
+							space.s[x][y] = space.s[x+1][y+1]
 							space.s[x+1][y+1] = 1
 						}
 					}
 					/* Sim for Sand */
 					if 2 == space.s[x][y] {
-						if space.s[x][y+1] != 2 {
-							space.s[x][y] = 0
+						if space.s[x][y+1] == 0 {
+							space.s[x][y] = space.s[x][y+1]
 							space.s[x][y+1] = 2
-						} else if space.s[x-1][y+1] != 2 {
-							space.s[x][y] = 0
+						} else if space.s[x-1][y+1] == 0 {
+							space.s[x][y] = space.s[x-1][y+1]
 							space.s[x-1][y+1] = 2
-						} else if space.s[x+1][y+1] != 2 {
-							space.s[x][y] = 0
+						} else if space.s[x+1][y+1] == 0 {
+							space.s[x][y] = space.s[x+1][y+1]
 							space.s[x+1][y+1] = 2
-						} else if space.s[x-1][y] != 2 {
-							space.s[x][y] = 0
+						} else if space.s[x-1][y] == 0 {
+							space.s[x][y] = space.s[x-1][y]
 							space.s[x-1][y] = 2
-						} else if space.s[x+1][y] != 2 {
-							space.s[x][y] = 0
+						} else if space.s[x+1][y] == 0 {
+							space.s[x][y] = space.s[x+1][y]
 							space.s[x+1][y] = 2
 						}
 					}
@@ -98,13 +98,13 @@ func sim(space Space) {
 				}
 			}
 		}
-		display(space)
 		if space.s[width/3][1] != 1 {
 			space.s[width/3][0] = 1
 		}
 		if space.s[2*width/3][1] != 2 {
 			space.s[2*width/3][0] = 2
 		}
+		display(space)
 
 		time.Sleep(50 * time.Millisecond)
 	}
