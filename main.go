@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Space is structure to keep track of the simulated space
 type Space struct {
 	w, h int
 	s    [][]int
@@ -75,7 +76,7 @@ func sim(space Space) {
 	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
-				if x+1 != width && y+1 != height {
+				if x != 0 && x+1 != width && y+1 != height {
 					/* Sim rules for Sand */
 					if 1 == space.s[x][y] {
 						if space.s[x][y+1] != 1 {
