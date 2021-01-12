@@ -2,33 +2,38 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type Space struct {
 	w, h int
-	s [][]int
+	s    [][]int
 }
 
 func main() {
 	width := 30
 	height := 30
 	screen := make([][]int, width, height)
-	screen[0][20] = 1
-	screen[1][0] = 2
-	// struct Space space = {width, height, screen};
-	space := Space{ width, height, screen }
-	display(space)
+	for i := range screen {
+		for y := 0; y < height; y++ {
+			screen[i] = append(screen[i], 0)
+		}
+	}
+	space := Space{
+		w: width,
+		h: height,
+		s: screen}
+	sim(space)
 }
 
 func display(space Space) {
 	fmt.Printf("\n")
+	for x := 0; x <= space.w; x++ {
+		fmt.Printf("-")
+	}
+	fmt.Printf("\n")
 	for _, xline := range space.s {
 		for x, c := range xline {
-			if x == 0 {
-				fmt.Printf("|")
-			} else if x == space.w {
-				fmt.Printf("|\n")
-			}
 			var pixel rune
 			switch c {
 			case 1:
@@ -39,37 +44,68 @@ func display(space Space) {
 				pixel = ' '
 			}
 			fmt.Printf("%c", pixel)
+			if x == space.w-1 {
+				fmt.Printf("|\n")
+			}
 		}
-		for x := 0; x < space.w; x++ {
-			fmt.Printf("-")
-		}
+	}
+	for x := 0; x < space.w+2; x++ {
+		fmt.Printf("-")
 	}
 	fmt.Printf("\n")
 }
 
-// void sim(struct Space *s)
-// {
-// 	int width = s->w, height = s->h;
-// 	while(1) {
-// 		for (int i = 0; i < width*height; i++) {
-// 			if (1 == s->space[i]) {
-// 				if (s->space[i+width] != 1) {
-// 					s->space[i] = 0;
-// 					s->space[i+width] = 1;
-// 				} else if (s->space[i+width-1] != 1) {
-// 					s->space[i] = 0;
-// 					s->space[i+width-1] = 1;
-// 				} else if (s->space[i+width+1] != 1) {
-// 					s->space[i] = 0;
-// 					s->space[i+width+1] = 1;
-// 				}
-// 			}
-// 		}
+func sim(space Space) {
+	width := space.w
+	height := space.h
+	for i := 0; i < 100; i++ {
+		for x := width - 1; x >= 0; x-- {
+			for y := height - 1; y >= 0; y-- {
+				if x+1 != width && y+1 != height {
+					/* Sim for Sand */
+					if 1 == space.s[x][y] {
+						if space.s[x][y+1] != 1 {
+							space.s[x][y] = 0
+							space.s[x][y+1] = 1
+						} else if space.s[x-1][y+1] != 1 {
+							space.s[x][y] = 0
+							space.s[x-1][y+1] = 1
+						} else if space.s[x+1][y+1] != 1 {
+							space.s[x][y] = 0
+							space.s[x+1][y+1] = 1
+						}
+					}
+					/* Sim for Sand */
+					if 2 == space.s[x][y] {
+						if space.s[x][y+1] != 2 {
+							space.s[x][y] = 0
+							space.s[x][y+1] = 2
+						} else if space.s[x-1][y+1] != 2 {
+							space.s[x][y] = 0
+							space.s[x-1][y+1] = 2
+						} else if space.s[x+1][y+1] != 2 {
+							space.s[x][y] = 0
+							space.s[x+1][y+1] = 2
+						} else if space.s[x-1][y] != 2 {
+							space.s[x][y] = 0
+							space.s[x-1][y] = 2
+						} else if space.s[x+1][y] != 2 {
+							space.s[x][y] = 0
+							space.s[x+1][y] = 2
+						}
+					}
 
-// 		if (s->space[width/2 + width] != 1) s->space[width/2] = 1;
+				}
+			}
+		}
+		display(space)
+		if space.s[width/3][1] != 1 {
+			space.s[width/3][0] = 1
+		}
+		if space.s[2*width/3][1] != 2 {
+			space.s[2*width/3][0] = 2
+		}
 
-// 		display(s);
-// 		sleep(1);
-// 	}
-// 	return;
-// }
+		time.Sleep(50 * time.Millisecond)
+	}
+}
