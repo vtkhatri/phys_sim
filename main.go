@@ -42,15 +42,12 @@ func display(space Space) {
 		cmd.Run()
 	default:
 	}
-	fmt.Printf("\n")
-	for x := 0; x < space.w; x++ {
-		fmt.Printf("-")
-	}
-	fmt.Printf("|\n")
-	for _, xline := range space.s {
-		for x, c := range xline {
+
+	// Starting printing
+	for y := 0; y < space.h; y++ {
+		for x := 0; x < space.w; x++ {
 			var pixel rune
-			switch c {
+			switch space.s[x][y] {
 			case 1:
 				pixel = 's'
 			case 2:
@@ -59,15 +56,10 @@ func display(space Space) {
 				pixel = ' '
 			}
 			fmt.Printf("%c", pixel)
-			if x == space.w-1 {
-				fmt.Printf("|\n")
-			}
 		}
+		fmt.Printf("\n")
 	}
-	for x := 0; x < space.w; x++ {
-		fmt.Printf("-")
-	}
-	fmt.Printf("|\n")
+	fmt.Printf("\n")
 }
 
 func sim(space Space) {
