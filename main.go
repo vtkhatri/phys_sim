@@ -43,7 +43,7 @@ func display(space Space) {
 	default:
 	}
 
-	// Starting printing
+	/* Starting printing */
 	for y := 0; y < space.h; y++ {
 		for x := 0; x < space.w; x++ {
 			var pixel rune
@@ -59,7 +59,6 @@ func display(space Space) {
 		}
 		fmt.Printf("\n")
 	}
-	fmt.Printf("\n")
 }
 
 func sim(space Space) {
@@ -105,9 +104,11 @@ func sim(space Space) {
 				}
 			}
 		}
+		/* Pouring sand @ 1/3 width */
 		if space.s[width/3][1] != 1 {
 			space.s[width/3][0] = 1
 		}
+		/* Dripping water @ 2/3 width */
 		if space.s[2*width/3][1] != 2 {
 			space.s[2*width/3][0] = 2
 		}
