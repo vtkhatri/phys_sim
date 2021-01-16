@@ -6,10 +6,11 @@ import (
 	"os/exec"
 	"runtime"
 	"time"
+	//"github.com/gdamore/tcell/v2"
 )
 
 func main() {
-	width := 35
+	width := 50
 	height := 35
 
 	spaceChannel := make(chan [][]int)
@@ -32,14 +33,14 @@ func display(spaceChannel chan [][]int) {
 		}
 
 		/* Starting printing */
-		for y := range space {
-			for x := range space {
+		for y, yline := range space {
+			for x := range yline {
 				var pixel rune
 				switch space[x][y] {
 				case 1:
 					pixel = 's'
 				case 2:
-					pixel = 'w'
+					pixel = '~'
 				default:
 					pixel = ' '
 				}
@@ -51,18 +52,20 @@ func display(spaceChannel chan [][]int) {
 }
 
 func sim(width int, height int, spaceChannel chan [][]int) {
-	screenSpace := make([][]int, width, height)
-	for i := range screenSpace {
+	screenSpace := make([][]int, height, width)
+	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			screenSpace[i] = append(screenSpace[i], 0)
+			screenSpace[x] = append(screenSpace[x], 0)
 		}
 	}
+	fmt.Printf("%v %v\n", len(screenSpace), len(screenSpace[0]))
 	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
-				if x != 0 && x+1 != width && y+1 != height {
+				if screenSpace[x][y] != 0 && x != 0 && x+1 != width && y+1 != height {
+					switch screenSpace[x][y] {
 					/* Sim rules for Sand */
-					if 1 == screenSpace[x][y] {
+					case 1:
 						if screenSpace[x][y+1] != 1 {
 							screenSpace[x][y] = screenSpace[x][y+1]
 							screenSpace[x][y+1] = 1
@@ -73,9 +76,8 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
 							screenSpace[x+1][y+1] = 1
 						}
-					}
 					/* Sim rules for Water */
-					if 2 == screenSpace[x][y] {
+					case 2:
 						if screenSpace[x][y+1] == 0 {
 							screenSpace[x][y] = screenSpace[x][y+1]
 							screenSpace[x][y+1] = 2
@@ -92,8 +94,8 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y]
 							screenSpace[x+1][y] = 2
 						}
+					default:
 					}
-
 				}
 			}
 		}
