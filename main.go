@@ -33,8 +33,8 @@ func display(spaceChannel chan [][]int) {
 		}
 
 		/* Starting printing */
-		for x, xline := range space {
-			for y := range xline {
+		for y := range space[0] {
+			for x := range space {
 				var pixel rune
 				switch space[x][y] {
 				case 1:
