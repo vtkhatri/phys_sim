@@ -33,8 +33,8 @@ func display(spaceChannel chan [][]int) {
 		}
 
 		/* Starting printing */
-		for y, yline := range space {
-			for x := range yline {
+		for x, xline := range space {
+			for y := range xline {
 				var pixel rune
 				switch space[x][y] {
 				case 1:
@@ -52,13 +52,14 @@ func display(spaceChannel chan [][]int) {
 }
 
 func sim(width int, height int, spaceChannel chan [][]int) {
-	screenSpace := make([][]int, height, width)
+	screenSpace := make([][]int, width)
 	for x := 0; x < width; x++ {
+		fmt.Printf("%v %v %v\t", x, len(screenSpace), len(screenSpace[x]))
 		for y := 0; y < height; y++ {
 			screenSpace[x] = append(screenSpace[x], 0)
 		}
+		fmt.Printf("-> %v %v\n", len(screenSpace[x]), screenSpace[x])
 	}
-	fmt.Printf("%v %v\n", len(screenSpace), len(screenSpace[0]))
 	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
