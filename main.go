@@ -54,11 +54,9 @@ func display(spaceChannel chan [][]int) {
 func sim(width int, height int, spaceChannel chan [][]int) {
 	screenSpace := make([][]int, width)
 	for x := 0; x < width; x++ {
-		fmt.Printf("%v %v %v\t", x, len(screenSpace), len(screenSpace[x]))
 		for y := 0; y < height; y++ {
 			screenSpace[x] = append(screenSpace[x], 0)
 		}
-		fmt.Printf("-> %v %v\n", len(screenSpace[x]), screenSpace[x])
 	}
 	for {
 		for x := width - 1; x >= 0; x-- {
