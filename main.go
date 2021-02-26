@@ -101,9 +101,9 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 						}
 					/* Sim rules for Gas */
 					case 3:
-						if x != 0 && x+1 != width && y != 0 && y+1 != height { /* left limit, right limit, top limit, index overflow limit */
+						if x != 0 && x+1 != width && y != 0 { /* left limit, right limit, top limit */
 						if screenSpace[x][y-1] != 3 {
-							screenSpace[x][y] = screenSpace[x][y+1]
+							screenSpace[x][y] = screenSpace[x][y-1]
 							screenSpace[x][y-1] = 3
 						} else if screenSpace[x-1][y-1] != 3 {
 							screenSpace[x][y] = screenSpace[x-1][y-1]
