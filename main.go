@@ -75,36 +75,36 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 					/* Sim rules for Sand */
 					case Sand:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] < Sand {
-							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = Sand
-						} else if screenSpace[x-1][y+1] < Sand {
-							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = Sand
-						} else if screenSpace[x+1][y+1] < Sand {
-							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = Sand
-						}
+							if screenSpace[x][y+1] < Sand {
+								screenSpace[x][y] = screenSpace[x][y+1]
+								screenSpace[x][y+1] = Sand
+							} else if screenSpace[x-1][y+1] < Sand {
+								screenSpace[x][y] = screenSpace[x-1][y+1]
+								screenSpace[x-1][y+1] = Sand
+							} else if screenSpace[x+1][y+1] < Sand {
+								screenSpace[x][y] = screenSpace[x+1][y+1]
+								screenSpace[x+1][y+1] = Sand
+							}
 						}
 					/* Sim rules for Water */
 					case Water:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] < Water {
-							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = Water
-						} else if screenSpace[x-1][y+1] < Water {
-							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = Water
-						} else if screenSpace[x+1][y+1] < Water {
-							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = Water
-						} else if screenSpace[x-1][y] < Water {
-							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = Water
-						} else if screenSpace[x+1][y] < Water {
-							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = Water
-						}
+							if screenSpace[x][y+1] < Water {
+								screenSpace[x][y] = screenSpace[x][y+1]
+								screenSpace[x][y+1] = Water
+							} else if screenSpace[x-1][y+1] < Water {
+								screenSpace[x][y] = screenSpace[x-1][y+1]
+								screenSpace[x-1][y+1] = Water
+							} else if screenSpace[x+1][y+1] < Water {
+								screenSpace[x][y] = screenSpace[x+1][y+1]
+								screenSpace[x+1][y+1] = Water
+							} else if screenSpace[x-1][y] < Water {
+								screenSpace[x][y] = screenSpace[x-1][y]
+								screenSpace[x-1][y] = Water
+							} else if screenSpace[x+1][y] < Water {
+								screenSpace[x][y] = screenSpace[x+1][y]
+								screenSpace[x+1][y] = Water
+							}
 						}
 					/* Sim rules for Gas */
 					/* Problem with current implementation -
@@ -114,22 +114,22 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 					 * Soln - temporary value EditedGas, to show edited gas, to be skipped in sim rule checks */
 					case Gas:
 						if x != 0 && x+1 != width && y != 0 { /* left limit, right limit, top limit */
-						if screenSpace[x][y-1] < Gas {
-							screenSpace[x][y] = screenSpace[x][y-1]
-							screenSpace[x][y-1] = EditedGas
-						} else if screenSpace[x-1][y-1] < Gas {
-							screenSpace[x][y] = screenSpace[x-1][y-1]
-							screenSpace[x-1][y-1] = EditedGas
-						} else if screenSpace[x+1][y-1] < Gas {
-							screenSpace[x][y] = screenSpace[x+1][y-1]
-							screenSpace[x+1][y-1] = EditedGas
-						} else if screenSpace[x-1][y] < Gas {
-							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = EditedGas
-						} else if screenSpace[x+1][y] < Gas {
-							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = EditedGas
-						}
+							if screenSpace[x][y-1] < Gas {
+								screenSpace[x][y] = screenSpace[x][y-1]
+								screenSpace[x][y-1] = EditedGas
+							} else if screenSpace[x-1][y-1] < Gas {
+								screenSpace[x][y] = screenSpace[x-1][y-1]
+								screenSpace[x-1][y-1] = EditedGas
+							} else if screenSpace[x+1][y-1] < Gas {
+								screenSpace[x][y] = screenSpace[x+1][y-1]
+								screenSpace[x+1][y-1] = EditedGas
+							} else if screenSpace[x-1][y] < Gas {
+								screenSpace[x][y] = screenSpace[x-1][y]
+								screenSpace[x-1][y] = EditedGas
+							} else if screenSpace[x+1][y] < Gas {
+								screenSpace[x][y] = screenSpace[x+1][y]
+								screenSpace[x+1][y] = EditedGas
+							}
 						}
 					case EditedGas:
 						screenSpace[x][y] = Gas
