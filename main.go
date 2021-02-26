@@ -63,10 +63,11 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
-				if screenSpace[x][y] != 0 && x != 0 && x+1 != width && y+1 != height {
+				if screenSpace[x][y] != 0 {
 					switch screenSpace[x][y] {
 					/* Sim rules for Sand */
 					case 1:
+						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
 						if screenSpace[x][y+1] != 1 {
 							screenSpace[x][y] = screenSpace[x][y+1]
 							screenSpace[x][y+1] = 1
@@ -77,8 +78,10 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
 							screenSpace[x+1][y+1] = 1
 						}
+						}
 					/* Sim rules for Water */
 					case 2:
+						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
 						if screenSpace[x][y+1] == 0 {
 							screenSpace[x][y] = screenSpace[x][y+1]
 							screenSpace[x][y+1] = 2
@@ -95,8 +98,10 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y]
 							screenSpace[x+1][y] = 2
 						}
+						}
 					/* Sim rules for Gas */
 					case 3:
+						if x != 0 && x+1 != width && y != 0 && y+1 != height { /* left limit, right limit, top limit, index overflow limit */
 						if screenSpace[x][y-1] != 3 {
 							screenSpace[x][y] = screenSpace[x][y+1]
 							screenSpace[x][y-1] = 3
@@ -113,6 +118,7 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y]
 							screenSpace[x+1][y] = 3
 						}
+						}
 					default:
 					}
 				}
@@ -127,10 +133,10 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 			screenSpace[2*width/3][0] = 2
 		}
 		/* Spouting? gas @ 1/2 width from the bottom */
-		if screenSpace[width/2][height-1] != 3 {
-			screenSpace[width/2][height] = 3
+		if screenSpace[width/2][height-2] != 3 {
+			screenSpace[width/2][height-1] = 3
 		}
-		
+
 		spaceChannel <- screenSpace
 
 		time.Sleep(16 * time.Millisecond) /* for approx 60 "frames" on terminal */
