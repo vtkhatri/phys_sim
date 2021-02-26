@@ -112,11 +112,6 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							}
 						}
 					/* Sim rules for Gas */
-					/* Problem with current implementation -
-					 * simulation rule checks happen bottom to top,
-					 * So solids and liquids are considered once, but gasses are considered each loop
-					 * so they intantly end up at the top
-					 * Soln - temporary value EditedGas, to show edited gas, to be skipped in sim rule checks */
 					case Gas:
 						/* left limit, right limit, top limit */
 						if x != 0 && x+1 != width && y != 0 {
