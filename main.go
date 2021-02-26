@@ -18,6 +18,13 @@ func main() {
 	sim(width, height, spaceChannel)
 }
 
+const (
+	Gas = 1 << iota
+	EditedGas
+	Water
+	Sand
+)
+
 func display(spaceChannel chan [][]int) {
 	for space := range spaceChannel {
 		switch runtime.GOOS {
@@ -37,11 +44,11 @@ func display(spaceChannel chan [][]int) {
 			for x := range space {
 				var pixel rune
 				switch space[x][y] {
-				case 2:
+				case Gas:
 					pixel = '.'
-				case 3:
+				case Water:
 					pixel = '~'
-				case 4:
+				case Sand:
 					pixel = 's'
 				default:
 					pixel = ' '
@@ -66,37 +73,37 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 				if screenSpace[x][y] != 0 {
 					switch screenSpace[x][y] {
 					/* Sim rules for Sand */
-					case 4:
+					case Sand:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] < 4 {
+						if screenSpace[x][y+1] < Sand {
 							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = 4
-						} else if screenSpace[x-1][y+1] < 4 {
+							screenSpace[x][y+1] = Sand
+						} else if screenSpace[x-1][y+1] < Sand {
 							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = 4
-						} else if screenSpace[x+1][y+1] < 4 {
+							screenSpace[x-1][y+1] = Sand
+						} else if screenSpace[x+1][y+1] < Sand {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = 4
+							screenSpace[x+1][y+1] = Sand
 						}
 						}
 					/* Sim rules for Water */
-					case 3:
+					case Water:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] < 3 {
+						if screenSpace[x][y+1] < Water {
 							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = 3
-						} else if screenSpace[x-1][y+1] < 3 {
+							screenSpace[x][y+1] = Water
+						} else if screenSpace[x-1][y+1] < Water {
 							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = 3
-						} else if screenSpace[x+1][y+1] < 3 {
+							screenSpace[x-1][y+1] = Water
+						} else if screenSpace[x+1][y+1] < Water {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = 3
-						} else if screenSpace[x-1][y] < 3 {
+							screenSpace[x+1][y+1] = Water
+						} else if screenSpace[x-1][y] < Water {
 							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = 3
-						} else if screenSpace[x+1][y] < 3 {
+							screenSpace[x-1][y] = Water
+						} else if screenSpace[x+1][y] < Water {
 							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = 3
+							screenSpace[x+1][y] = Water
 						}
 						}
 					/* Sim rules for Gas */
@@ -104,44 +111,44 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 					 * simulation rule checks happen bottom to top,
 					 * So solids and liquids are considered once, but gasses are considered each loop
 					 * so they intantly end up at the top
-					 * Soln - temporary value 2, to show edited gas, to be skipped in sim rule checks */
-					case 1:
+					 * Soln - temporary value EditedGas, to show edited gas, to be skipped in sim rule checks */
+					case Gas:
 						if x != 0 && x+1 != width && y != 0 { /* left limit, right limit, top limit */
-						if screenSpace[x][y-1] < 1 {
+						if screenSpace[x][y-1] < Gas {
 							screenSpace[x][y] = screenSpace[x][y-1]
-							screenSpace[x][y-1] = 2
-						} else if screenSpace[x-1][y-1] < 1 {
+							screenSpace[x][y-1] = EditedGas
+						} else if screenSpace[x-1][y-1] < Gas {
 							screenSpace[x][y] = screenSpace[x-1][y-1]
-							screenSpace[x-1][y-1] = 2
-						} else if screenSpace[x+1][y-1] < 1 {
+							screenSpace[x-1][y-1] = EditedGas
+						} else if screenSpace[x+1][y-1] < Gas {
 							screenSpace[x][y] = screenSpace[x+1][y-1]
-							screenSpace[x+1][y-1] = 2
-						} else if screenSpace[x-1][y] < 1 {
+							screenSpace[x+1][y-1] = EditedGas
+						} else if screenSpace[x-1][y] < Gas {
 							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = 2
-						} else if screenSpace[x+1][y] < 1 {
+							screenSpace[x-1][y] = EditedGas
+						} else if screenSpace[x+1][y] < Gas {
 							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = 2
+							screenSpace[x+1][y] = EditedGas
 						}
 						}
-					case 2:
-						screenSpace[x][y] = 1
+					case EditedGas:
+						screenSpace[x][y] = Gas
 					default:
 					}
 				}
 			}
 		}
 		/* Spouting? gas @ 1/2 width from the bottom */
-		if screenSpace[width/2][height-2] != 1 {
-			screenSpace[width/2][height-1] = 1
+		if screenSpace[width/2][height-2] != Gas {
+			screenSpace[width/2][height-1] = Gas
 		}
 		/* Dripping water @ 2/3 width */
-		if screenSpace[2*width/3][1] != 3 {
-			screenSpace[2*width/3][0] = 3
+		if screenSpace[2*width/3][1] != Water {
+			screenSpace[2*width/3][0] = Water
 		}
 		/* Pouring sand @ 1/3 width */
-		if screenSpace[width/3][1] != 4 {
-			screenSpace[width/3][0] = 4
+		if screenSpace[width/3][1] != Sand {
+			screenSpace[width/3][0] = Sand
 		}
 
 		spaceChannel <- screenSpace
