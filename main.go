@@ -29,7 +29,7 @@ const (
 	Gas
 	Water
 	Sand
-	/* Their edited counterparts */
+	/* Unique particles' edited counterparts */
 	EditedEmptySpace
 	EditedGas
 	EditedWater
@@ -50,7 +50,7 @@ func display(spaceChannel chan [][]int) {
 		default:
 		}
 
-		/* Starting printing */
+		/* Starting particle printing */
 		for y := range space[0] {
 			for x := range space {
 				var pixel rune
@@ -72,12 +72,15 @@ func display(spaceChannel chan [][]int) {
 }
 
 func sim(width int, height int, spaceChannel chan [][]int) {
+	/* Creating and initializing simulated space */
 	screenSpace := make([][]int, width)
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
 			screenSpace[x] = append(screenSpace[x], 0)
 		}
 	}
+
+	/* Starting simulation */
 	for {
 		for x := width - 1; x >= 0; x-- {
 			for y := height - 1; y >= 0; y-- {
@@ -145,12 +148,14 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 				}
 			}
 		}
+
+		/* Changing edited particles to their non-edited counterpart */
 		for y := range screenSpace[0] {
 			for x := range screenSpace {
-				/* Changing edited particles to their non-edited counterpart */
 				screenSpace[x][y] -= EditedParticleOffset
 			}
 		}
+
 		/* Pouring sand @ 1/3 width */
 		if screenSpace[width/3][1] != Sand {
 			screenSpace[(width/3)-1][0] = screenSpace[width/3][0]
