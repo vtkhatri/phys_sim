@@ -41,6 +41,8 @@ func display(spaceChannel chan [][]int) {
 					pixel = 's'
 				case 2:
 					pixel = '~'
+				case 3:
+					pixel = '.'
 				default:
 					pixel = ' '
 				}
@@ -93,6 +95,24 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 							screenSpace[x][y] = screenSpace[x+1][y]
 							screenSpace[x+1][y] = 2
 						}
+					/* Sim rules for Gas */
+					case 3:
+						if screenSpace[x][y-1] != 3 {
+							screenSpace[x][y] = screenSpace[x][y+1]
+							screenSpace[x][y-1] = 3
+						} else if screenSpace[x-1][y-1] != 3 {
+							screenSpace[x][y] = screenSpace[x-1][y-1]
+							screenSpace[x-1][y-1] = 3
+						} else if screenSpace[x+1][y-1] != 3 {
+							screenSpace[x][y] = screenSpace[x+1][y-1]
+							screenSpace[x+1][y-1] = 3
+						} else if screenSpace[x-1][y] != 3 {
+							screenSpace[x][y] = screenSpace[x-1][y]
+							screenSpace[x-1][y] = 3
+						} else if screenSpace[x+1][y] != 3 {
+							screenSpace[x][y] = screenSpace[x+1][y]
+							screenSpace[x+1][y] = 3
+						}
 					default:
 					}
 				}
@@ -106,6 +126,11 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 		if screenSpace[2*width/3][1] != 2 {
 			screenSpace[2*width/3][0] = 2
 		}
+		/* Spouting? gas @ 1/2 width from the bottom */
+		if screenSpace[width/2][height-1] != 3 {
+			screenSpace[width/2][height] = 3
+		}
+		
 		spaceChannel <- screenSpace
 
 		time.Sleep(16 * time.Millisecond) /* for approx 60 "frames" on terminal */
