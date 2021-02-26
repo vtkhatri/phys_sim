@@ -37,12 +37,12 @@ func display(spaceChannel chan [][]int) {
 			for x := range space {
 				var pixel rune
 				switch space[x][y] {
-				case 1:
-					pixel = 's'
 				case 2:
-					pixel = '~'
-				case 3:
 					pixel = '.'
+				case 3:
+					pixel = '~'
+				case 4:
+					pixel = 's'
 				default:
 					pixel = ' '
 				}
@@ -66,37 +66,37 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 				if screenSpace[x][y] != 0 {
 					switch screenSpace[x][y] {
 					/* Sim rules for Sand */
-					case 1:
+					case 4:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] != 1 {
+						if screenSpace[x][y+1] < 4 {
 							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = 1
-						} else if screenSpace[x-1][y+1] != 1 {
+							screenSpace[x][y+1] = 4
+						} else if screenSpace[x-1][y+1] < 4 {
 							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = 1
-						} else if screenSpace[x+1][y+1] != 1 {
+							screenSpace[x-1][y+1] = 4
+						} else if screenSpace[x+1][y+1] < 4 {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = 1
+							screenSpace[x+1][y+1] = 4
 						}
 						}
 					/* Sim rules for Water */
-					case 2:
+					case 3:
 						if x != 0 && x+1 != width && y+1 != height { /* left limit, right limit, bottom limit */
-						if screenSpace[x][y+1] == 0 {
+						if screenSpace[x][y+1] < 3 {
 							screenSpace[x][y] = screenSpace[x][y+1]
-							screenSpace[x][y+1] = 2
-						} else if screenSpace[x-1][y+1] == 0 {
+							screenSpace[x][y+1] = 3
+						} else if screenSpace[x-1][y+1] < 3 {
 							screenSpace[x][y] = screenSpace[x-1][y+1]
-							screenSpace[x-1][y+1] = 2
-						} else if screenSpace[x+1][y+1] == 0 {
+							screenSpace[x-1][y+1] = 3
+						} else if screenSpace[x+1][y+1] < 3 {
 							screenSpace[x][y] = screenSpace[x+1][y+1]
-							screenSpace[x+1][y+1] = 2
-						} else if screenSpace[x-1][y] == 0 {
+							screenSpace[x+1][y+1] = 3
+						} else if screenSpace[x-1][y] < 3 {
 							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = 2
-						} else if screenSpace[x+1][y] == 0 {
+							screenSpace[x-1][y] = 3
+						} else if screenSpace[x+1][y] < 3 {
 							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = 2
+							screenSpace[x+1][y] = 3
 						}
 						}
 					/* Sim rules for Gas */
@@ -104,44 +104,44 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 					 * simulation rule checks happen bottom to top,
 					 * So solids and liquids are considered once, but gasses are considered each loop
 					 * so they intantly end up at the top
-					 * Soln - temporary value 4, to show edited gas, to be skipped in sim rule checks */
-					case 3:
+					 * Soln - temporary value 2, to show edited gas, to be skipped in sim rule checks */
+					case 1:
 						if x != 0 && x+1 != width && y != 0 { /* left limit, right limit, top limit */
-						if screenSpace[x][y-1] != 3 {
+						if screenSpace[x][y-1] < 1 {
 							screenSpace[x][y] = screenSpace[x][y-1]
-							screenSpace[x][y-1] = 4
-						} else if screenSpace[x-1][y-1] != 3 {
+							screenSpace[x][y-1] = 2
+						} else if screenSpace[x-1][y-1] < 1 {
 							screenSpace[x][y] = screenSpace[x-1][y-1]
-							screenSpace[x-1][y-1] = 4
-						} else if screenSpace[x+1][y-1] != 3 {
+							screenSpace[x-1][y-1] = 2
+						} else if screenSpace[x+1][y-1] < 1 {
 							screenSpace[x][y] = screenSpace[x+1][y-1]
-							screenSpace[x+1][y-1] = 4
-						} else if screenSpace[x-1][y] != 3 {
+							screenSpace[x+1][y-1] = 2
+						} else if screenSpace[x-1][y] < 1 {
 							screenSpace[x][y] = screenSpace[x-1][y]
-							screenSpace[x-1][y] = 4
-						} else if screenSpace[x+1][y] != 3 {
+							screenSpace[x-1][y] = 2
+						} else if screenSpace[x+1][y] < 1 {
 							screenSpace[x][y] = screenSpace[x+1][y]
-							screenSpace[x+1][y] = 4
+							screenSpace[x+1][y] = 2
 						}
 						}
-					case 4:
-						screenSpace[x][y] = 3
+					case 2:
+						screenSpace[x][y] = 1
 					default:
 					}
 				}
 			}
 		}
-		/* Pouring sand @ 1/3 width */
-		if screenSpace[width/3][1] != 1 {
-			screenSpace[width/3][0] = 1
+		/* Spouting? gas @ 1/2 width from the bottom */
+		if screenSpace[width/2][height-2] != 1 {
+			screenSpace[width/2][height-1] = 1
 		}
 		/* Dripping water @ 2/3 width */
-		if screenSpace[2*width/3][1] != 2 {
-			screenSpace[2*width/3][0] = 2
+		if screenSpace[2*width/3][1] != 3 {
+			screenSpace[2*width/3][0] = 3
 		}
-		/* Spouting? gas @ 1/2 width from the bottom */
-		if screenSpace[width/2][height-2] != 3 {
-			screenSpace[width/2][height-1] = 3
+		/* Pouring sand @ 1/3 width */
+		if screenSpace[width/3][1] != 4 {
+			screenSpace[width/3][0] = 4
 		}
 
 		spaceChannel <- screenSpace
