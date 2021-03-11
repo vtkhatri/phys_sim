@@ -82,8 +82,8 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 
 	/* Starting simulation */
 	for {
-		for x := width - 1; x >= 0; x-- {
-			for y := height - 1; y >= 0; y-- {
+		for x := 0; x < width; x++ {
+			for y := 0; y < height; y++ {
 				if screenSpace[x][y] != 0 {
 					switch screenSpace[x][y] {
 					/* Sim rules for Sand */
@@ -150,9 +150,11 @@ func sim(width int, height int, spaceChannel chan [][]int) {
 		}
 
 		/* Changing edited particles to their non-edited counterpart */
-		for y := range screenSpace[0] {
-			for x := range screenSpace {
-				screenSpace[x][y] -= EditedParticleOffset
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
+				if screenSpace[x][y] >= EditedEmptySpace {
+					screenSpace[x][y] -= EditedParticleOffset
+				}
 			}
 		}
 
